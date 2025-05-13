@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: unilever-scrapper-postgresql
+    environment:
+      POSTGRES_DB: online_shop
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+      - ./etc/postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - shared-network
+  redis:
+    image: redis:latest
+    container_name: unilever-scrapper-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    name: unilever-network
