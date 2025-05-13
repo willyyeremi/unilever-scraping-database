@@ -2,13 +2,13 @@ create schema main;
 
 create table online_shop.main.raw_scrap_data(
 	id serial4
-	,"name" varchar(255)
+	,"name" varchar(255) not null
 	,detail text
-	,price int8
+	,price int8 not null
 	,originalprice int8
 	,discountpercentage float
-	,platform varchar(255)
-	,createdate date
+	,platform varchar(255)  not null
+	,createdate date  not null
 	,primary key(id));
 comment on column main.raw_scrap_data."id" is 'Unique identifier.';
 comment on column main.raw_scrap_data."name" is 'Name of the product.';
