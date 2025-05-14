@@ -42,7 +42,7 @@ CREATE TABLE public.users (
 	password_hash text NOT NULL,
 	"role" varchar(50) NOT NULL,
 	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	update_timestamp timestamp NOT NULL,
+	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	CONSTRAINT users_pkey PRIMARY KEY (id),
 	CONSTRAINT users_username_key UNIQUE (username)
 );
