@@ -40,6 +40,7 @@ CREATE TABLE public.users (
 	id serial4 NOT NULL,
 	username varchar(100) NOT NULL,
 	password_hash text NOT NULL,
+	password_salt text NOT NULL,
 	"role" varchar(50) NOT NULL,
 	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
