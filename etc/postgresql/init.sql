@@ -26,9 +26,8 @@ create database api_user_access;
 \c api_user_access;
 
 CREATE TABLE api_user_access.public.users (
-	id serial4 NOT NULL
-	,username varchar NOT NULL
-	,"password" varchar NOT NULL
-	,CONSTRAINT users_pk PRIMARY KEY (id)
-	,CONSTRAINT users_unique UNIQUE (username)
+    id SERIAL4 PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(50) NOT NULL
 );
