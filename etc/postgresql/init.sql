@@ -25,9 +25,30 @@ create database api_user_access;
 
 \c api_user_access;
 
-CREATE TABLE api_user_access.public.users (
-    id SERIAL4 PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    role VARCHAR(50) NOT NULL
+CREATE OR REPLACE FUNCTION public.func_update_timestamp()
+	RETURNS trigger
+	LANGUAGE plpgsql
+AS $function$
+	BEGIN
+		NEW.update_timestamp = CURRENT_TIMESTAMP;
+		RETURN NEW;
+	END;
+$function$
+;
+
+CREATE TABLE public.users (
+	id serial4 NOT NULL,
+	username varchar(100) NOT NULL,
+	password_hash text NOT NULL,
+	"role" varchar(50) NOT NULL,
+	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	update_timestamp timestamp NOT NULL,
+	CONSTRAINT users_pkey PRIMARY KEY (id),
+	CONSTRAINT users_username_key UNIQUE (username)
 );
+
+create public.trigger trigger_users_update_timestamp before
+update
+    on
+    public.users for each row execute function func_update_timestamp()
+;
