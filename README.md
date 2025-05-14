@@ -1,4 +1,4 @@
-# Unilever Scrapper: Database
+# Unilever Scraping: Database
 This repository functions as a database backend for the project.
 
 ## Precaution
