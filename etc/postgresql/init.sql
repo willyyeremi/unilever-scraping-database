@@ -26,6 +26,10 @@ create database airflow_database;
 CREATE USER airflow_admin WITH PASSWORD 'airflow_admin';
 GRANT ALL PRIVILEGES ON DATABASE airflow_database TO airflow_admin;
 GRANT ALL ON SCHEMA public TO airflow_admin;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO airflow_admin;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO airflow_admin;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO airflow_admin;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO airflow_admin;
 
 create database api_user_access;
 
