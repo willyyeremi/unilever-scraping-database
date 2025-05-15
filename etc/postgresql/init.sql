@@ -48,7 +48,7 @@ CREATE TABLE public.users (
 	CONSTRAINT users_username_key UNIQUE (username)
 );
 
-create public.trigger trigger_users_update_timestamp before
+create trigger trigger_users_update_timestamp before
 update
     on
     public.users for each row execute function func_update_timestamp()

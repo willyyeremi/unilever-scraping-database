@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgresql:
     image: postgres:latest
-    container_name: unilever-scrapper-postgresql
+    container_name: unilever-scraping-postgresql
     environment:
       POSTGRES_DB: online_shop
       POSTGRES_USER: admin
@@ -17,7 +17,7 @@ services:
       - shared-network
   redis:
     image: redis:latest
-    container_name: unilever-scrapper-redis
+    container_name: unilever-scraping-redis
     ports:
       - "6379:6379"
     volumes:
@@ -27,4 +27,4 @@ services:
 
 networks:
   shared-network:
-    name: unilever-network
+    name: unilever-scraping-network
