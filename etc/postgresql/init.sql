@@ -21,6 +21,12 @@ comment on column main.raw_scrap_data.createdate is 'date when the data was craw
 
 create database airflow_database;
 
+\c api_user_access;
+
+CREATE USER airflow_admin WITH PASSWORD 'airflow_admin';
+GRANT ALL PRIVILEGES ON DATABASE airflow_database TO airflow_admin;
+GRANT ALL ON SCHEMA public TO airflow_admin;
+
 create database api_user_access;
 
 \c api_user_access;
