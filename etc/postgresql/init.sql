@@ -79,4 +79,4 @@ CREATE TABLE public.users (
 create trigger trigger_users_update_timestamp before
 update
     on
-    public.users for each row execute function func_update_timestamp();s
+    public.users for each row execute function func_update_timestamp();
