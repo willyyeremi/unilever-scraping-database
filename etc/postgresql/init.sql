@@ -46,20 +46,37 @@ AS $function$
 $function$
 ;
 
+CREATE TABLE public.roles (
+	id serial4 NOT NULL,
+	roles varchar(50) NOT NULL,
+	is_active int2 not null,
+	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT roles_pk PRIMARY KEY (id),
+	CONSTRAINT check_users__is_active CHECK (is_active IN (0, 1))
+);
+
+create trigger trigger_roles_update_timestamp before
+update
+    on
+    public.roles for each row execute function func_update_timestamp();
+
 CREATE TABLE public.users (
 	id serial4 NOT NULL,
 	username varchar(100) NOT NULL,
 	password_hash text NOT NULL,
 	password_salt text NOT NULL,
-	"role" varchar(50) NOT NULL,
+	roles_id int4 NOT NULL,
+	is_active int2 not null,
 	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	CONSTRAINT users_pkey PRIMARY KEY (id),
-	CONSTRAINT users_username_key UNIQUE (username)
+	CONSTRAINT unique_users__username UNIQUE (username),
+	CONSTRAINT check_roles__is_active CHECK (is_active IN (0, 1)),
+	constraint fk_users__roles_id___roles__id foreign key(roles_id) references public.roles(id)
 );
 
 create trigger trigger_users_update_timestamp before
 update
     on
-    public.users for each row execute function func_update_timestamp()
-;
+    public.users for each row execute function func_update_timestamp();
