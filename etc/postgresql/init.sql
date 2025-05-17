@@ -36,8 +36,8 @@ create database api_user_access;
 \c api_user_access;
 
 CREATE OR REPLACE FUNCTION public.func_update_timestamp()
-	RETURNS trigger
-	LANGUAGE plpgsql
+ RETURNS trigger
+ LANGUAGE plpgsql
 AS $function$
 	BEGIN
 		NEW.update_timestamp = CURRENT_TIMESTAMP;
@@ -46,14 +46,29 @@ AS $function$
 $function$
 ;
 
+CREATE TABLE public.request_type (
+	id serial4 NOT NULL,
+	request_type varchar(10) NOT NULL,
+	is_active int2 DEFAULT 1 NOT NULL,
+	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT check_request_type__is_active CHECK ((is_active = ANY (ARRAY[0, 1]))),
+	CONSTRAINT request_type_pk PRIMARY KEY (id)
+);
+
+create trigger trigger_request_type_update_timestamp before
+update
+    on
+    public.request_type for each row execute function func_update_timestamp();
+
 CREATE TABLE public.roles (
 	id serial4 NOT NULL,
 	roles varchar(50) NOT NULL,
-	is_active int2 not null,
+	is_active int2 DEFAULT 1 NOT NULL,
 	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	CONSTRAINT roles_pk PRIMARY KEY (id),
-	CONSTRAINT check_users__is_active CHECK (is_active IN (0, 1))
+	CONSTRAINT check_users__is_active CHECK ((is_active = ANY (ARRAY[0, 1]))),
+	CONSTRAINT roles_pk PRIMARY KEY (id)
 );
 
 create trigger trigger_roles_update_timestamp before
@@ -61,22 +76,65 @@ update
     on
     public.roles for each row execute function func_update_timestamp();
 
+CREATE TABLE public.roles_permissions (
+	id serial4 NOT NULL,
+	roles_id int4 NOT NULL,
+	request_type_id int4 NOT NULL,
+	is_active int2 DEFAULT 1 NOT NULL,
+	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT check_roles_permissions__is_active CHECK ((is_active = ANY (ARRAY[0, 1]))),
+	CONSTRAINT roles_permissions_pk PRIMARY KEY (id),
+	CONSTRAINT unique_roles_permissions__roles_id__request_type_id UNIQUE (roles_id, request_type_id),
+	CONSTRAINT fk_roles_permissions__request_type_id___request_type__id FOREIGN KEY (request_type_id) REFERENCES public.request_type(id),
+	CONSTRAINT fk_roles_permissions__roles_id___roles__id FOREIGN KEY (roles_id) REFERENCES public.roles(id)
+);
+
+create trigger trigger_roles_permissions_update_timestamp before
+update
+    on
+    public.roles_permissions for each row execute function func_update_timestamp();
+
 CREATE TABLE public.users (
 	id serial4 NOT NULL,
 	username varchar(100) NOT NULL,
 	password_hash text NOT NULL,
 	password_salt text NOT NULL,
 	roles_id int4 NOT NULL,
-	is_active int2 not null,
+	is_active int2 DEFAULT 1 NOT NULL,
 	create_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	update_timestamp timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	CONSTRAINT users_pkey PRIMARY KEY (id),
+	CONSTRAINT check_roles__is_active CHECK ((is_active = ANY (ARRAY[0, 1]))),
 	CONSTRAINT unique_users__username UNIQUE (username),
-	CONSTRAINT check_roles__is_active CHECK (is_active IN (0, 1)),
-	constraint fk_users__roles_id___roles__id foreign key(roles_id) references public.roles(id)
+	CONSTRAINT users_pkey PRIMARY KEY (id),
+	CONSTRAINT fk_users__roles_id___roles__id FOREIGN KEY (roles_id) REFERENCES public.roles(id)
 );
 
 create trigger trigger_users_update_timestamp before
 update
     on
     public.users for each row execute function func_update_timestamp();
+
+INSERT INTO public.roles (roles) VALUES
+	('root'),
+	('admin'),
+	('moderator'),
+	('user');
+
+INSERT INTO public.request_type (request_type) VALUES
+	('POST'),
+	('GET'),
+	('PUT'),
+	('DELETE');
+
+INSERT INTO public.roles_permissions (roles_id,request_type_id) VALUES
+	(1,1),
+	(1,2),
+	(1,3),
+	(1,4),
+	(2,1),
+	(2,2),
+	(2,3),
+	(3,2),
+	(3,3),
+	(4,2);
