@@ -58,10 +58,10 @@ CREATE TABLE main.request_type (
 	CONSTRAINT request_type_pk PRIMARY KEY (id)
 );
 
-create trigger trigger_request_type_update_timestamp before
+create trigger main.trigger_request_type_update_timestamp before
 update
     on
-    main.request_type for each row execute function func_update_timestamp();
+    main.request_type for each row execute function main.func_update_timestamp();
 
 CREATE TABLE main.roles (
 	id serial4 NOT NULL,
@@ -73,10 +73,10 @@ CREATE TABLE main.roles (
 	CONSTRAINT roles_pk PRIMARY KEY (id)
 );
 
-create trigger trigger_roles_update_timestamp before
+create trigger main.trigger_roles_update_timestamp before
 update
     on
-    main.roles for each row execute function func_update_timestamp();
+    main.roles for each row execute function main.func_update_timestamp();
 
 CREATE TABLE main.roles_permissions (
 	id serial4 NOT NULL,
@@ -92,10 +92,10 @@ CREATE TABLE main.roles_permissions (
 	CONSTRAINT fk_roles_permissions__roles_id___roles__id FOREIGN KEY (roles_id) REFERENCES public.roles(id)
 );
 
-create trigger trigger_roles_permissions_update_timestamp before
+create trigger main.trigger_roles_permissions_update_timestamp before
 update
     on
-    main.roles_permissions for each row execute function func_update_timestamp();
+    main.roles_permissions for each row execute function main.func_update_timestamp();
 
 CREATE TABLE main.users (
 	id serial4 NOT NULL,
@@ -112,10 +112,10 @@ CREATE TABLE main.users (
 	CONSTRAINT fk_users__roles_id___roles__id FOREIGN KEY (roles_id) REFERENCES public.roles(id)
 );
 
-create trigger trigger_users_update_timestamp before
+create trigger main.trigger_users_update_timestamp before
 update
     on
-    main.users for each row execute function func_update_timestamp();
+    main.users for each row execute function main.func_update_timestamp();
 
 INSERT INTO main.roles (roles) VALUES
 	('root'),
