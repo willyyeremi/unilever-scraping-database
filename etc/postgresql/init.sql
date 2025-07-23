@@ -1,6 +1,6 @@
 create schema main;
 
-create table online_shop.main.raw_scrap_data(
+create table online_shop.main.tr_raw_scrap_data(
 	id serial4
 	,"name" varchar(255) not null
 	,detail text
@@ -10,14 +10,14 @@ create table online_shop.main.raw_scrap_data(
 	,platform varchar(255)  not null
 	,createdate date  not null
 	,primary key(id));
-comment on column main.raw_scrap_data."id" is 'Unique identifier.';
-comment on column main.raw_scrap_data."name" is 'Name of the product.';
-comment on column main.raw_scrap_data.detail is 'Additional details or description of the product.';
-comment on column main.raw_scrap_data.price is 'Current price of the product.';
-comment on column main.raw_scrap_data.originalprice is 'Original price of the product.';
-comment on column main.raw_scrap_data.discountpercentage is 'Discount percentage applied to the product.';
-comment on column main.raw_scrap_data.platform is 'Platform from which the product data was crawled.';
-comment on column main.raw_scrap_data.createdate is 'date when the data was crawled.';
+comment on column main.tr_raw_scrap_data."id" is 'Unique identifier.';
+comment on column main.tr_raw_scrap_data."name" is 'Name of the product.';
+comment on column main.tr_raw_scrap_data.detail is 'Additional details or description of the product.';
+comment on column main.tr_raw_scrap_data.price is 'Current price of the product.';
+comment on column main.tr_raw_scrap_data.originalprice is 'Original price of the product.';
+comment on column main.tr_raw_scrap_data.discountpercentage is 'Discount percentage applied to the product.';
+comment on column main.tr_raw_scrap_data.platform is 'Platform from which the product data was crawled.';
+comment on column main.tr_raw_scrap_data.createdate is 'date when the data was crawled.';
 
 create database airflow_database;
 
@@ -35,7 +35,9 @@ create database api_user_access;
 
 \c api_user_access;
 
-CREATE OR REPLACE FUNCTION public.func_update_timestamp()
+create schema main;
+
+CREATE OR REPLACE FUNCTION main.func_update_timestamp()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -46,7 +48,7 @@ AS $function$
 $function$
 ;
 
-CREATE TABLE public.request_type (
+CREATE TABLE main.request_type (
 	id serial4 NOT NULL,
 	request_type varchar(10) NOT NULL,
 	is_active int2 DEFAULT 1 NOT NULL,
@@ -59,9 +61,9 @@ CREATE TABLE public.request_type (
 create trigger trigger_request_type_update_timestamp before
 update
     on
-    public.request_type for each row execute function func_update_timestamp();
+    main.request_type for each row execute function func_update_timestamp();
 
-CREATE TABLE public.roles (
+CREATE TABLE main.roles (
 	id serial4 NOT NULL,
 	roles varchar(50) NOT NULL,
 	is_active int2 DEFAULT 1 NOT NULL,
@@ -74,9 +76,9 @@ CREATE TABLE public.roles (
 create trigger trigger_roles_update_timestamp before
 update
     on
-    public.roles for each row execute function func_update_timestamp();
+    main.roles for each row execute function func_update_timestamp();
 
-CREATE TABLE public.roles_permissions (
+CREATE TABLE main.roles_permissions (
 	id serial4 NOT NULL,
 	roles_id int4 NOT NULL,
 	request_type_id int4 NOT NULL,
@@ -93,9 +95,9 @@ CREATE TABLE public.roles_permissions (
 create trigger trigger_roles_permissions_update_timestamp before
 update
     on
-    public.roles_permissions for each row execute function func_update_timestamp();
+    main.roles_permissions for each row execute function func_update_timestamp();
 
-CREATE TABLE public.users (
+CREATE TABLE main.users (
 	id serial4 NOT NULL,
 	username varchar(100) NOT NULL,
 	password_hash text NOT NULL,
@@ -113,21 +115,21 @@ CREATE TABLE public.users (
 create trigger trigger_users_update_timestamp before
 update
     on
-    public.users for each row execute function func_update_timestamp();
+    main.users for each row execute function func_update_timestamp();
 
-INSERT INTO public.roles (roles) VALUES
+INSERT INTO main.roles (roles) VALUES
 	('root'),
 	('admin'),
 	('moderator'),
 	('user');
 
-INSERT INTO public.request_type (request_type) VALUES
+INSERT INTO main.request_type (request_type) VALUES
 	('POST'),
 	('GET'),
 	('PUT'),
 	('DELETE');
 
-INSERT INTO public.roles_permissions (roles_id,request_type_id) VALUES
+INSERT INTO main.roles_permissions (roles_id,request_type_id) VALUES
 	(1,1),
 	(1,2),
 	(1,3),
